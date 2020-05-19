@@ -14,6 +14,22 @@ var updateTitle;
 var updateDepartmentId;
 var employeeBothNames;
 var chosenRoleToUpdateId;
+//Constructors for adding data
+class NewEmployee {
+  constructor(first_name, last_name, role_id, manager_id) {
+    this.first_name = first_name;
+    this.last_name = last_name;
+    this.role_id = role_id;
+    this.manager_id = manager_id;
+  }
+};
+class NewRole {
+  constructor(title, salary, department_id) {
+    this.title = title;
+    this.salary = salary;
+    this.department_id = department_id
+  }
+};
 
 //Mysql connection
 const connection = mysql.createConnection({
@@ -55,7 +71,7 @@ function allRoles() {
 };
 
 
-//Add date functions
+//Add data functions
 function addEmployee() {
   inquirer.prompt(addEmployeeQuestions)
     .then(function (answer) {
@@ -67,12 +83,14 @@ function addEmployee() {
         employeeRole = res[0].id;
       });
       //Change Manager into Manager ID from DB
-      let managerName = answer.manager.split(" ")
+      let managerName = answer.manager.split(" ");
       let managerFirst = managerName[0];
-      let managerLast = managerName[1]
+      let managerLast = managerName[1];
+      //Change Employee from name to ID
       const managerQuery = "SELECT id FROM employees WHERE ?"
       connection.query(managerQuery, [{ first_name: managerFirst }, { last_name: managerLast }], function (err, res) {
         employeeManager = res[0].id;
+        //Query to add employee to DB
         const employeeToPush = new NewEmployee(employeeFirst, employeeLast, employeeRole, employeeManager);
         const query = "INSERT INTO employees SET ?";
         connection.query(query, employeeToPush);
@@ -241,23 +259,6 @@ const restartOrExitQuestion = [{
   message: "Do you want to return to the Start menu?"
 }];
 
-//Constructors for adding data
-class NewEmployee {
-  constructor(first_name, last_name, role_id, manager_id) {
-    this.first_name = first_name;
-    this.last_name = last_name;
-    this.role_id = role_id;
-    this.manager_id = manager_id;
-  }
-};
-class NewRole {
-  constructor(title, salary, department_id) {
-    this.title = title;
-    this.salary = salary;
-    this.department_id = department_id
-  }
-};
-
 //Main function to direct user based on a question
 const startingQuestions = function () {
   inquirer
@@ -324,12 +325,12 @@ function runSearch() {
   allEmployeesFunction();
   allRolesList();
   allDepartmentsList();
+  console.log("Welcome to the employee management system!")
   startingQuestions();
 };
 
 //Main connection and initializes program
 connection.connect(function (err) {
   if (err) throw err;
-  console.log("Server running");
   runSearch();
 });
