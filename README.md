@@ -1,7 +1,7 @@
 # Employee Management System
 
 
-![screenShot](./Master/EMSscreenShot)
+![screenShot](./Master/EMSscreenShot.png)
 
 ## Description
 
